@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { cleanEmail, signInWithEmail, signUpWithEmail } from "@/lib/auth";
 import { createSession, loadUser } from "@/lib/session";
 import { databaseConfigured } from "@/lib/db";
+import { provisionAfterSignIn } from "@/lib/chain/provisioning";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,7 @@ export async function POST(req: NextRequest) {
         : await signUpWithEmail(email, password);
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: 401 });
     await createSession(result.userId, req.headers.get("user-agent"));
+    await provisionAfterSignIn(result.userId);
     const user = await loadUser(result.userId);
     const next =
       user?.profile?.verification !== "verified"

@@ -19,7 +19,12 @@ npm install
 npm run dev       # http://localhost:3000
 npm run build     # production build (webpack)
 npm run lint
+npm run test      # unit + component suite (offline)
+npx tsc --noEmit  # type check
 npm run db:migrate  # applies db/migrations/*.sql to DATABASE_URL
+
+# end-to-end against the real networks (needs `npm run dev` in another shell)
+npm run wallet:live-check
 ```
 
 Node 20.9+ (Next.js 16 requirement). Fonts are self-hosted in `public/fonts`,
@@ -38,7 +43,13 @@ DATABASE_URL=            # Neon Postgres connection string
 DATABASE_URL_POOLED=     # Neon pooler connection string (used at runtime)
 AUTH_SECRET=             # 32+ random bytes, signs the session cookie
 APP_URL=                 # public origin, e.g. https://earnly-app.vercel.app
+WALLET_MASTER_KEY=       # 32 bytes base64 — seals wallet keys at rest (openssl rand -base64 32)
+SEPOLIA_RPC_URL=         # Sepolia JSON-RPC endpoint (optional; a public default is used)
 ```
+
+`.env.example` documents every variable. `WALLET_MASTER_KEY` is required for the
+wallet to work at all: without it the wallet API answers `503` with an explicit
+message rather than inventing an address.
 
 `GOOGLE_CLIENT_SECRET`, `DATABASE_URL` and `AUTH_SECRET` are only read inside
 server modules (`src/lib/auth.ts`, `src/lib/db.ts`, `src/lib/session.ts`) and
@@ -84,14 +95,31 @@ treatment and overlapping product panels rather than a screenshot in a frame.
 | Search, filters, sorting, saved | Built, in-memory + `localStorage` |
 | Apply → Paid pipeline | Built; stage changes are demo buttons |
 | Profile, ratings, reviews | Built on demo data |
-| Payments (USDC balances, ledger) | Built; **no chain transaction exists** |
+| Payments — Stellar Testnet wallet | **Real** — Testnet wallet per account, live Horizon balances, XLM send/receive, Friendbot funding, reconciled history |
+| Payments — Sepolia wallet | **Real** — embedded Sepolia wallet, live balance from chain, native test ETH send/receive |
+| Payments — Swap | Placeholder, labelled **COMING SOON**; no bridge, aggregator, quote or transaction |
+| Payments (USDC balances, earning ledger) | Built on demo money — **no chain transaction exists** for those figures |
 | AI Opportunity Finder | Built wizard, ranked and explained results; **no live web search ran** |
 | Asset Leasing, Inventory Loans, Digital Pawn Shop | Product pages with real explanatory flows; no listing, loan, valuation or pledge is processed — labelled **COMING SOON** |
 | Marketplace, Scholarships, Social, Off-ramp | Visually complete, labelled **COMING SOON** |
 | Testimonials, FAQ, footer, About/Privacy/Terms/Contact pages | Built; testimonials are product previews, not results from this prototype |
 
 Demo money references are prefixed `demo-ref-` on purpose. Nothing in this
-repository signs, broadcasts or stores anything on a blockchain.
+repository signs or broadcasts anything for the USDC earning ledger. The
+Payments → Stellar and Payments → Ethereum wallets *do* sign and broadcast real
+Testnet transactions; see `docs/wallet-integration.md`.
+
+## Wallet integration
+
+`Payments` holds three destinations: **Stellar** (Testnet, primary), **Ethereum**
+(Sepolia) and **Swap** (a labelled placeholder). Both wallets are created
+automatically after Google sign-in — no external wallet, no seed phrase — and the
+addresses stay stable across refresh, logout and redeploy.
+
+`docs/wallet-integration.md` is the full guide: custody model and its limits,
+the exact managed-provider blocker, how Stellar and Sepolia transactions are
+signed and confirmed, the schema, the API surface, every environment variable,
+what the test suites cover and what is still outstanding.
 
 ## Architecture
 
@@ -101,9 +129,11 @@ src/
     page.tsx           landing
     signin, verify, onboarding
     api/               auth (google/email/session/signout), profile,
-                       universities, health — all Node runtime
+                       universities, health, wallet (index, provision,
+                       stellar send/fund, evm send) — all Node runtime
     app/               authenticated shell + dashboard, tasks, jobs,
-                       internships, work, payments, profile, ai,
+                       internships, work, payments (hub + stellar + ethereum
+                       + swap), profile, ai,
                        leasing, loans, pawn,
                        marketplace, scholarships, social, offramp
     about, privacy, terms, contact
@@ -122,6 +152,16 @@ src/
     data.ts            demo listings, transactions, reviews, notifications
     store.tsx          session, verification, onboarding, applications, theme
     ai.ts              discovery pipeline + SourceAdapter interface
+    chain/
+      config.ts        every network endpoint, chain id and display label
+      crypto.ts        AES-256-GCM envelope encryption for signing secrets
+      keys.ts          Stellar and EVM keypair generation
+      wallets.ts       wallet store: idempotent provisioning, transaction records
+      stellar.ts       Stellar Testnet service (Horizon, fees, payments)
+      evm.ts           Sepolia service (viem, balances, transfers)
+      decimal.ts       exact decimal→BigInt amount handling
+      activity.ts      network history merged with our own records
+      api.ts           session guards for the wallet routes
 ```
 
 `src/lib/ai.ts` is where the real work goes. It defines `SourceAdapter` and

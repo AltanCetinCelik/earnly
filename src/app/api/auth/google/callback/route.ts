@@ -7,6 +7,7 @@ import {
   upsertGoogleUser,
 } from "@/lib/auth";
 import { createSession, loadUser } from "@/lib/session";
+import { provisionAfterSignIn } from "@/lib/chain/provisioning";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,9 @@ export async function GET(req: NextRequest) {
     const identity = await googleIdentity(tokens.access_token);
     const userId = await upsertGoogleUser(identity);
     await createSession(userId, req.headers.get("user-agent"));
+    // Provision the embedded wallets for this identity. Idempotent, and it
+    // never throws into the sign-in path.
+    await provisionAfterSignIn(userId);
     const user = await loadUser(userId);
     if (!user) return back(site, "/signin?error=google_failed");
     if (user.profile?.verification !== "verified") return back(site, "/verify");
