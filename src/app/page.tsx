@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { EarnlyMark } from "@/components/AppShell";
 import { Faq } from "@/components/landing/Faq";
+import { PayoutRails } from "@/components/landing/Payout";
 import { EarningProducts } from "@/components/landing/Products";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { Testimonials } from "@/components/landing/Testimonials";
@@ -23,7 +24,7 @@ const STEPS = [
   {
     n: "03",
     t: "Work and earn",
-    d: "Do the work, submit it in Earnly, and get paid in USDC when it is approved. Both sides see the same record.",
+    d: "Do the work, submit it in Earnly, and get paid when it is approved — into the Stellar or Ethereum wallet you picked. Both sides see the same record.",
     icon: "wallet",
   },
   {
@@ -51,12 +52,15 @@ export default function LandingPage() {
             <EarnlyMark size={28} />
             <span className="display-tight text-[20px]">Earnly</span>
           </Link>
-          <nav className="ml-8 hidden items-center gap-7 text-[13.5px] font-semibold text-ink2 md:flex">
+          <nav className="ml-8 hidden items-center gap-7 whitespace-nowrap text-[13.5px] font-semibold text-ink2 lg:flex">
             <a href="#how" className="hover:text-ink">
               How it works
             </a>
             <a href="#work" className="hover:text-ink">
               Work
+            </a>
+            <a href="#payout" className="hover:text-ink">
+              Get paid
             </a>
             <a href="#products" className="hover:text-ink">
               Earn more
@@ -101,7 +105,8 @@ export default function LandingPage() {
             <p className="mt-3 max-w-[56ch] text-[14.5px] leading-relaxed text-ink2">
               Earnly connects verified students with businesses, staff and neighbours who need
               something done. Real paid tasks, real jobs, real internships — and a record of the work
-              that follows you to your first interview.
+              that follows you to your first interview. Pay settles on-chain to a Stellar or
+              Ethereum wallet created with your account.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Button href="/signin" size="lg" iconRight="arrowRight">
@@ -114,7 +119,7 @@ export default function LandingPage() {
             <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-rule pt-6">
               {[
                 { icon: "badge", t: "Student-verified" },
-                { icon: "wallet", t: "Earn in USDC" },
+                { icon: "wallet", t: "Stellar & Ethereum payouts" },
                 { icon: "star", t: "Ratings that mean work" },
               ].map((f) => (
                 <span key={f.t} className="inline-flex items-center gap-2 text-[13px] text-ink2">
@@ -234,6 +239,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <PayoutRails />
 
       {/* --------------------------------------------------------- categories */}
       <section id="work" className="border-t border-rule">

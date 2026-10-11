@@ -29,7 +29,7 @@ const FAQ = [
   },
   {
     q: "Is Earnly available outside Nigeria?",
-    a: "Yes. Earnly is being designed as a global platform with users and universities from around the world. Payouts are denominated in USDC, and off-ramp to local currency is on the roadmap.",
+    a: "Yes. Earnly is being designed as a global platform with users and universities from around the world. Earnings settle into the Stellar or Ethereum wallet created with your account, and off-ramp to local currency is on the roadmap.",
   },
   {
     q: "How does Earnly make money?",

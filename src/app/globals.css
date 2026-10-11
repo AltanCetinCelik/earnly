@@ -249,6 +249,20 @@
     }
   }
 
+  /* The payout rail: money travelling the wire, work → wallet. */
+  .rail-flow {
+    stroke-dasharray: 12 88;
+    animation: rail-flow 2.6s linear infinite;
+  }
+  @keyframes rail-flow {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
   .duotone {
     filter: grayscale(1) contrast(1.08) brightness(0.92);
   }
@@ -262,5 +276,12 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* The rail keeps its dotted track instead of freezing mid-flow. */
+  .rail-flow {
+    animation: none !important;
+    stroke-dasharray: 3 9;
+    stroke-dashoffset: 0;
   }
 }
