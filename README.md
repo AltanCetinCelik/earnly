@@ -1,5 +1,7 @@
 # Earnly
 
+[![Bounties](https://img.shields.io/badge/bounties-%242%2C280-open%20for%20contributors-brightgreen)](https://github.com/Earnly-Build/earnly/issues)
+
 **Verified student opportunity and earning platform.** Students confirm they are
 students, find paid tasks, jobs and internships, get paid in USDC, collect
 ratings from the people who paid them, and graduate with a record of real work
@@ -185,6 +187,14 @@ in both themes after the build; the dark theme reports zero nodes below its
 WCAG threshold and the light theme's only remaining flags are white type over
 the art-directed photographs. Focus is visible (`:focus-visible`), targets are
 at least 40px, and `prefers-reduced-motion` disables the motion.
+
+## Contributing & bounties
+
+This project funds external contributors: 30 open bounty issues worth **$2,280**
+in total ($50–$120 each) covering security fixes, payments correctness, tests,
+accessibility, performance and DX. [`BOUNTIES.md`](./BOUNTIES.md) explains every
+issue; [`CONTRIBUTING.md`](./CONTRIBUTING.md) covers the `/claim` workflow and
+the review bar. Issues live at <https://github.com/Earnly-Build/earnly/issues>.
 
 ## Deploying
 
