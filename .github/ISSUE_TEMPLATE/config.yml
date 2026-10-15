@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Earnly docs
+    url: https://github.com/Earnly-Build/earnly/blob/main/README.md
+    about: Setup, environment variables, and what is real vs mocked.

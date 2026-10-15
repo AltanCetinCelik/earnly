@@ -1,0 +1,38 @@
+name: Bug report
+description: Something in Earnly is broken or misbehaving.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Clear description of the bug, including what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps, exact URLs, and any sample input.
+      placeholder: |
+        1. Sign in with email
+        2. Go to /app/payments/stellar
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: Browser + OS, or deployment URL if on the hosted build.
+      placeholder: "Chrome 141 / macOS 16"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: This is not a security vulnerability (email maintainers instead)
+          required: true
